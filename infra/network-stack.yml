@@ -16,14 +16,6 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs '']
       MapPublicIpOnLaunch: true
 
-  PublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.2.0/24
-      AvailabilityZone: !Select [1, !GetAZs '']
-      MapPublicIpOnLaunch: true
-
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -31,9 +23,46 @@ Resources:
       CidrBlock: 10.0.3.0/24
       AvailabilityZone: !Select [0, !GetAZs '']
 
-  PrivateSubnet2:
-    Type: AWS::EC2::Subnet
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: 10.0.4.0/24
-      AvailabilityZone: !Select [1, !GetAZs '']
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+Outputs:
+  VPC:
+    Value: !Ref VPC
+    Export:
+      Name: !Sub ${AWS::StackName}-VPC
+
+  PublicSubnet:
+    Value: !Ref PublicSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicSubnet
+
+  PrivateSubnet:
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateSubnet

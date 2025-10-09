@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  AdminIP:
+    Type: String
+    Description: Admin IP address for SSH access
+    Default: 0.0.0.0/32
+
+Resources:
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for web application
+      VpcId: !ImportValue network-stack-VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AdminIP
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: 51820
+          ToPort: 51820
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  WebSecurityGroup:
+    Description: Security group for web application
+    Value: !Ref WebSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-WebSecurityGroup
