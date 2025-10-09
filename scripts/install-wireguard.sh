@@ -59,6 +59,9 @@ server {
 }
 EOF
 
+# Create SSL directories
+mkdir -p /etc/ssl/private /etc/ssl/certs
+
 # Generate self-signed SSL certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout /etc/ssl/private/nginx-selfsigned.key \
