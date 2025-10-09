@@ -101,5 +101,13 @@ EOF
 systemctl enable nginx
 systemctl start nginx
 
+# Fix Amazon Linux default page issue
+rm -f /usr/share/nginx/html/index.html
+cp /var/www/html/index.html /usr/share/nginx/html/index.html
+cp /var/www/html/server_public.key /usr/share/nginx/html/server_public.key
+
+# Restart Nginx to ensure changes take effect
+systemctl restart nginx
+
 # Create log entry
 echo "WireGuard and Nginx installation completed at $(date)" >> /var/log/wireguard-install.log
