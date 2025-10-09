@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key Pair for SSH access
+
+Resources:
+  VPNInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  VPNInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref VPNInstanceRole
+
+  VPNInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c02fb55956c7d316
+      InstanceType: t3.micro
+      KeyName: !Ref KeyPairName
+      IamInstanceProfile: !Ref VPNInstanceProfile
+      SecurityGroupIds:
+        - !ImportValue security-groups-WebSecurityGroup
+      SubnetId: !ImportValue network-stack-PublicSubnet
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 20
+            VolumeType: gp3
+            DeleteOnTermination: true
+
+Outputs:
+  VPNInstanceId:
+    Description: VPN Instance ID
+    Value: !Ref VPNInstance
+    Export:
+      Name: !Sub ${AWS::StackName}-VPNInstanceId
+
+  VPNInstancePublicIP:
+    Description: VPN Instance Public IP
+    Value: !GetAtt VPNInstance.PublicIp
+    Export:
+      Name: !Sub ${AWS::StackName}-VPNInstancePublicIP
