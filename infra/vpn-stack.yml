@@ -4,6 +4,10 @@ Parameters:
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: EC2 Key Pair for SSH access
+  
+  EnvironmentName:
+    Type: String
+    Description: Environment name (dev or prod)
 
 Resources:
   VPNInstanceRole:
@@ -33,8 +37,11 @@ Resources:
       KeyName: !Ref KeyPairName
       IamInstanceProfile: !Ref VPNInstanceProfile
       SecurityGroupIds:
-        - !ImportValue security-groups-WebSecurityGroup
-      SubnetId: !ImportValue network-stack-PublicSubnet
+        - Fn::ImportValue: 
+            Fn::Sub: ${EnvironmentName}-security-groups-WebSecurityGroup
+      SubnetId: 
+        Fn::ImportValue: 
+          Fn::Sub: ${EnvironmentName}-network-stack-PublicSubnet
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
