@@ -1,0 +1,79 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches: [dev/test, main]
+  pull_request:
+    branches: [dev/test, main]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Validate CloudFormation templates
+        run: |
+          aws cloudformation validate-template --template-body file://infra/network-stack.yml
+          aws cloudformation validate-template --template-body file://infra/security-groups.yml
+          aws cloudformation validate-template --template-body file://infra/vpn-stack.yml
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "ENV_NAME=prod" >> $GITHUB_ENV
+            echo "ADMIN_IP=${{ secrets.PROD_ADMIN_IP }}" >> $GITHUB_ENV
+            echo "KEY_PAIR=${{ secrets.PROD_KEY_PAIR }}" >> $GITHUB_ENV
+          else
+            echo "ENV_NAME=dev" >> $GITHUB_ENV
+            echo "ADMIN_IP=${{ secrets.DEV_ADMIN_IP }}" >> $GITHUB_ENV
+            echo "KEY_PAIR=${{ secrets.DEV_KEY_PAIR }}" >> $GITHUB_ENV
+          fi
+      
+      - name: Deploy Network Stack
+        run: |
+          aws cloudformation deploy \
+            --template-file infra/network-stack.yml \
+            --stack-name ${{ env.ENV_NAME }}-network-stack \
+            --no-fail-on-empty-changeset
+      
+      - name: Deploy Security Groups
+        run: |
+          aws cloudformation deploy \
+            --template-file infra/security-groups.yml \
+            --stack-name ${{ env.ENV_NAME }}-security-groups \
+            --parameter-overrides AdminIP=${{ env.ADMIN_IP }} EnvironmentName=${{ env.ENV_NAME }} \
+            --no-fail-on-empty-changeset
+      
+      - name: Deploy VPN Stack
+        run: |
+          aws cloudformation deploy \
+            --template-file infra/vpn-stack.yml \
+            --stack-name ${{ env.ENV_NAME }}-vpn-stack \
+            --parameter-overrides KeyPairName=${{ env.KEY_PAIR }} EnvironmentName=${{ env.ENV_NAME }} \
+            --capabilities CAPABILITY_IAM \
+            --no-fail-on-empty-changeset

@@ -5,13 +5,19 @@ Parameters:
     Type: String
     Description: Admin IP address for SSH access
     Default: 0.0.0.0/32
+  
+  EnvironmentName:
+    Type: String
+    Description: Environment name (dev or prod)
 
 Resources:
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for web application
-      VpcId: !ImportValue network-stack-VPC
+      VpcId: 
+        Fn::ImportValue: 
+          Fn::Sub: ${EnvironmentName}-network-stack-VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
