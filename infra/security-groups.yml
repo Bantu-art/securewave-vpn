@@ -15,9 +15,13 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for web application
+      GroupName: !Sub ${AWS::StackName}-WebSecurityGroup
       VpcId: 
         Fn::ImportValue: 
           Fn::Sub: ${EnvironmentName}-network-stack-VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-WebSecurityGroup
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22

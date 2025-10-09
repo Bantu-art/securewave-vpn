@@ -7,6 +7,9 @@ Resources:
       CidrBlock: 10.0.0.0/16
       EnableDnsHostnames: true
       EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-VPC
 
   PublicSubnet1:
     Type: AWS::EC2::Subnet
@@ -15,6 +18,9 @@ Resources:
       CidrBlock: 10.0.1.0/24
       AvailabilityZone: !Select [0, !GetAZs '']
       MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PublicSubnet
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -22,9 +28,16 @@ Resources:
       VpcId: !Ref VPC
       CidrBlock: 10.0.3.0/24
       AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PrivateSubnet
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-IGW
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -36,6 +49,9 @@ Resources:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PublicRouteTable
 
   PublicRoute:
     Type: AWS::EC2::Route
