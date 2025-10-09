@@ -56,6 +56,14 @@ Resources:
             VolumeSize: 20
             VolumeType: gp3
             DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          BRANCH="main"
+          if [ "${EnvironmentName}" = "dev" ]; then
+            BRANCH="dev/test"
+          fi
+          curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/scripts/install-wireguard.sh | bash
 
 Outputs:
   VPNInstanceId:
