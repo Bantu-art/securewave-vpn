@@ -13,6 +13,7 @@ Resources:
   VPNInstanceRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub ${AWS::StackName}-VPNInstanceRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -22,10 +23,14 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-VPNInstanceRole
 
   VPNInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      InstanceProfileName: !Sub ${AWS::StackName}-VPNInstanceProfile
       Roles:
         - !Ref VPNInstanceRole
 
@@ -36,6 +41,9 @@ Resources:
       InstanceType: t3.micro
       KeyName: !Ref KeyPairName
       IamInstanceProfile: !Ref VPNInstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-VPNInstance
       SecurityGroupIds:
         - Fn::ImportValue: 
             Fn::Sub: ${EnvironmentName}-security-groups-WebSecurityGroup
