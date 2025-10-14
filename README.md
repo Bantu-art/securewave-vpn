@@ -86,10 +86,13 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/securewave-vpn/dev/te
 chmod +x manage-clients.sh
 
 # List clients
-sudo ./manage-clients.sh
+sudo ./manage-clients.sh list
 
 # Add a client
 sudo ./manage-clients.sh add john
+
+# Remove a client
+sudo ./manage-clients.sh remove john
 
 # View client config (for manual setup)
 sudo cat /etc/wireguard/clients/john.conf
@@ -107,17 +110,17 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Nginx web dashboard with HTTPS**
 - **Automated server setup via UserData scripts**
 - **Server public key display via web interface**
-- **Client management script with add functionality**
+- **Complete client management script (add/remove/list)**
 - **Automatic IP assignment and configuration generation**
+- **Secure client removal with immediate disconnection**
 
 🚧 **In Progress**
 - Web-based client management interface
-- Client removal functionality
 
 📋 **Next Steps**
-- Complete client add/remove functionality
 - QR code generation for mobile clients
 - Enhanced web dashboard with client status
+- Web-based client management interface
 - Monitoring and logging setup
 - Backup and disaster recovery
 - Custom domain and proper SSL certificates
