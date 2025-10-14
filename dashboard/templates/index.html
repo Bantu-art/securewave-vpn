@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecureWave VPN Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>SecureWave VPN Dashboard</h1>
+    <div class="status">
+        <h2>Server Status</h2>
+        <p id="status-text">Loading...</p>
+        <button onclick="checkStatus()">Refresh Status</button>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
