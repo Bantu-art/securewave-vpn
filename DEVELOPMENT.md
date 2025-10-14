@@ -243,7 +243,8 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 2. ✅ List clients function
 3. ✅ Add client function (complete with IP assignment, config generation, server update)
 4. ✅ Remove client function (secure removal with immediate disconnection)
-5. Web interface integration (planned)
+5. ✅ Flask dashboard infrastructure setup
+6. Web interface implementation (in progress)
 
 **Why incremental?**
 - Easier to understand and debug
@@ -389,10 +390,46 @@ get_next_ip() { ... }
 ## Future Enhancements
 
 ### Short Term (Next Sprint)
+- Complete Flask dashboard implementation
 - Web-based client management interface
 - QR code generation for mobile clients
 - Client configuration download via web interface
 - Enhanced dashboard with real-time client status
+
+## Flask Dashboard Architecture
+
+### Technology Decision: Flask vs PHP vs Node.js
+**Chosen**: Python Flask
+**Reasoning**:
+- Developer familiarity with Python over PHP
+- Lightweight and simple for VPN management use case
+- Easy integration with existing bash scripts via subprocess
+- Rich Python ecosystem for future features (QR codes, etc.)
+- JSON API design for modern frontend integration
+
+### Installation Strategy: Direct vs Virtual Environment
+**Chosen**: Direct system installation
+**Reasoning**:
+- Single-purpose VPN server (no dependency conflicts)
+- Simpler deployment and service management
+- Better systemd integration
+- Easier maintenance and updates
+
+### Security Architecture
+```bash
+# Dedicated user for Flask application
+useradd -r -s /bin/false vpn-dashboard
+
+# Sudo access only for client management script
+vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh
+
+# Flask runs on localhost:5000, Nginx proxies HTTPS requests
+```
+
+### Service Architecture
+```
+Client (HTTPS) → Nginx (443) → Flask (5000) → manage-clients.sh → WireGuard
+```
 
 ### Medium Term
 - Enhanced monitoring and logging
