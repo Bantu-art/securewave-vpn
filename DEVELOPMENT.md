@@ -239,10 +239,10 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 ### Evolved Approach: Scripted Management
 **Decision**: Create `manage-clients.sh` script
 **Development Strategy**: Incremental development
-1. Basic setup and configuration
-2. List clients function
-3. Add client function (complete with IP assignment, config generation, server update)
-4. Remove client function (planned)
+1. ✅ Basic setup and configuration
+2. ✅ List clients function
+3. ✅ Add client function (complete with IP assignment, config generation, server update)
+4. ✅ Remove client function (secure removal with immediate disconnection)
 5. Web interface integration (planned)
 
 **Why incremental?**
@@ -274,17 +274,33 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 - Automatic resource management (IP assignment, config generation)
 - Zero-downtime updates (systemctl reload vs restart)
 
-**Add Client Implementation:**
+**Client Management Implementation:**
 ```bash
 # Automatic IP assignment starting from 10.8.0.2
 get_next_ip() { ... }
 
-# Complete client provisioning:
+# Complete client provisioning (add_client):
 # 1. Generate unique keys
 # 2. Assign next available IP
 # 3. Create client config file
 # 4. Update server configuration
 # 5. Reload WireGuard service
+
+# Secure client removal (remove_client):
+# 1. Extract client public key from config
+# 2. Remove [Peer] section from server config
+# 3. Delete client configuration file
+# 4. Reload WireGuard (immediate disconnection)
+# 5. Provide clear feedback
+```
+
+**CLI Interface Design:**
+```bash
+./manage-clients.sh {add|remove|list} [client_name]
+# - Consistent command structure
+# - Input validation and error handling
+# - Clear usage examples and help
+# - Immediate feedback on operations
 ```
 
 ## Security Considerations
@@ -373,10 +389,10 @@ get_next_ip() { ... }
 ## Future Enhancements
 
 ### Short Term (Next Sprint)
-- Client removal functionality
 - Web-based client management interface
 - QR code generation for mobile clients
 - Client configuration download via web interface
+- Enhanced dashboard with real-time client status
 
 ### Medium Term
 - Enhanced monitoring and logging
