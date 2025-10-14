@@ -26,7 +26,8 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - **EBS Volume**: 20GB gp3 storage
 - **Key Pair**: SSH access for administration
 - **WireGuard VPN**: Configured on 10.8.0.1/24 network
-- **Web Dashboard**: HTTPS interface for server management
+- **Flask Dashboard**: Python web interface for client management
+- **Nginx Proxy**: HTTPS frontend with Flask backend integration
 
 ## Infrastructure as Code
 
@@ -36,8 +37,9 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - `infra/vpn-stack.yml` - EC2 instance, IAM roles
 
 ### Automation Scripts
-- `scripts/install-wireguard.sh` - Automated WireGuard and Nginx installation
-- `scripts/manage-clients.sh` - Client management utilities (in development)
+- `scripts/install-wireguard.sh` - Automated WireGuard, Nginx, and Flask dashboard installation
+- `scripts/manage-clients.sh` - Client management utilities
+- `dashboard/` - Flask web dashboard for client management
 
 ### Environment Management
 - **Development**: `dev/test` branch → dev environment
@@ -136,8 +138,10 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Complete client management script (add/remove/list)**
 - **Automatic IP assignment and configuration generation**
 - **Secure client removal with immediate disconnection**
+- **Flask dashboard integration setup**
 
 🚧 **In Progress**
+- Flask web dashboard implementation
 - Web-based client management interface
 
 📋 **Next Steps**
