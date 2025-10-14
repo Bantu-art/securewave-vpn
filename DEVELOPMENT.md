@@ -241,7 +241,7 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 **Development Strategy**: Incremental development
 1. Basic setup and configuration
 2. List clients function
-3. Add client function (in progress)
+3. Add client function (complete with IP assignment, config generation, server update)
 4. Remove client function (planned)
 5. Web interface integration (planned)
 
@@ -271,6 +271,21 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 - Input validation for all functions
 - Graceful error handling
 - Clear user feedback
+- Automatic resource management (IP assignment, config generation)
+- Zero-downtime updates (systemctl reload vs restart)
+
+**Add Client Implementation:**
+```bash
+# Automatic IP assignment starting from 10.8.0.2
+get_next_ip() { ... }
+
+# Complete client provisioning:
+# 1. Generate unique keys
+# 2. Assign next available IP
+# 3. Create client config file
+# 4. Update server configuration
+# 5. Reload WireGuard service
+```
 
 ## Security Considerations
 
@@ -358,10 +373,10 @@ PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEP
 ## Future Enhancements
 
 ### Short Term (Next Sprint)
-- Complete client management script
+- Client removal functionality
 - Web-based client management interface
 - QR code generation for mobile clients
-- Client configuration download
+- Client configuration download via web interface
 
 ### Medium Term
 - Enhanced monitoring and logging
