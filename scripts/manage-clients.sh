@@ -97,9 +97,59 @@ EOF
     echo "Client can now connect to the VPN"
 }
 
-# Test with command line argument
-if [ "$1" = "add" ]; then
-    add_client "$2"
-else
-    list_clients
-fi
+# Remove a client
+remove_client() {
+    local client_name="$1"
+    
+    # Check if client name provided
+    if [ -z "$client_name" ]; then
+        echo "Usage: remove_client <client_name>"
+        return 1
+    fi
+    
+    # Check if client exists
+    if [ ! -f "$CLIENT_DIR/$client_name.conf" ]; then
+        echo "Client '$client_name' not found"
+        return 1
+    fi
+    
+    echo "Removing client: $client_name"
+    
+    # Get client public key from config
+    local client_public_key=$(grep "PublicKey" "$CLIENT_DIR/$client_name.conf" | head -1 | cut -d'=' -f2 | tr -d ' ')
+    
+    # Remove client from server config
+    # Find and remove the [Peer] section with this public key
+    sed -i "/^\[Peer\]$/,/^$/{
+        /PublicKey = $client_public_key/,/^$/{d}
+    }" "$WG_CONFIG"
+    
+    # Remove client config file
+    rm "$CLIENT_DIR/$client_name.conf"
+    
+    # Reload WireGuard to apply changes
+    systemctl reload wg-quick@wg0
+    
+    echo "Client '$client_name' removed successfully!"
+    echo "Client can no longer connect to VPN"
+}
+
+# Handle command line arguments
+case "$1" in
+    add)
+        add_client "$2"
+        ;;
+    remove)
+        remove_client "$2"
+        ;;
+    list)
+        list_clients
+        ;;
+    *)
+        echo "Usage: $0 {add|remove|list} [client_name]"
+        echo "Examples:"
+        echo "  $0 add john"
+        echo "  $0 remove john"
+        echo "  $0 list"
+        ;;
+esac
