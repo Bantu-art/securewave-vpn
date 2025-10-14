@@ -25,6 +25,8 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - **EC2 Instance**: t3.micro running Amazon Linux 2
 - **EBS Volume**: 20GB gp3 storage
 - **Key Pair**: SSH access for administration
+- **WireGuard VPN**: Configured on 10.8.0.1/24 network
+- **Web Dashboard**: HTTPS interface for server management
 
 ## Infrastructure as Code
 
@@ -32,6 +34,10 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - `infra/network-stack.yml` - VPC, subnets, routing
 - `infra/security-groups.yml` - Security group rules
 - `infra/vpn-stack.yml` - EC2 instance, IAM roles
+
+### Automation Scripts
+- `scripts/install-wireguard.sh` - Automated WireGuard and Nginx installation
+- `scripts/manage-clients.sh` - Client management utilities (in development)
 
 ### Environment Management
 - **Development**: `dev/test` branch → dev environment
@@ -67,6 +73,28 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 3. Push to `dev/test` branch to deploy development environment
 4. Merge to `main` to deploy production environment
 
+### Accessing the VPN Server
+- **Web Dashboard**: `https://INSTANCE_PUBLIC_IP` (ignore SSL warning)
+- **SSH Access**: `ssh -i your-key.pem ec2-user@INSTANCE_PUBLIC_IP`
+- **Systems Manager**: Connect via AWS Console → EC2 → Session Manager
+- **WireGuard Port**: 51820/UDP for VPN connections
+
+### Client Management
+```bash
+# Download client management script
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/securewave-vpn/dev/test/scripts/manage-clients.sh -o manage-clients.sh
+chmod +x manage-clients.sh
+
+# List clients
+sudo ./manage-clients.sh
+
+# Add a client
+sudo ./manage-clients.sh add john
+
+# View client config (for manual setup)
+sudo cat /etc/wireguard/clients/john.conf
+```
+
 ## Current Status
 
 ✅ **Completed**
@@ -75,12 +103,24 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - EC2 instance provisioning with IAM roles
 - CI/CD pipeline for automated deployments
 - Environment separation (dev/prod)
+- **WireGuard VPN server installation and configuration**
+- **Nginx web dashboard with HTTPS**
+- **Automated server setup via UserData scripts**
+- **Server public key display via web interface**
+- **Client management script with add functionality**
+- **Automatic IP assignment and configuration generation**
 
-🚧 **Next Steps**
-- WireGuard VPN server configuration
-- Web management interface
-- Client configuration generation
+🚧 **In Progress**
+- Web-based client management interface
+- Client removal functionality
+
+📋 **Next Steps**
+- Complete client add/remove functionality
+- QR code generation for mobile clients
+- Enhanced web dashboard with client status
 - Monitoring and logging setup
+- Backup and disaster recovery
+- Custom domain and proper SSL certificates
 
 ## Resource Naming Convention
 
@@ -95,3 +135,10 @@ Resources are automatically named with environment prefixes:
 - SSH access restricted to admin IP addresses
 - IAM roles instead of hardcoded credentials
 - Environment-specific access controls
+- WireGuard modern cryptography (ChaCha20, Poly1305)
+- Self-signed SSL certificates for web dashboard
+- Secure key generation and management
+
+## Development
+
+For detailed development information, architecture decisions, and troubleshooting, see [DEVELOPMENT.md](DEVELOPMENT.md).
