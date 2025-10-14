@@ -88,8 +88,11 @@ chmod +x manage-clients.sh
 # List clients
 sudo ./manage-clients.sh
 
-# Add a client (in development)
-sudo ./manage-clients.sh add client_name
+# Add a client
+sudo ./manage-clients.sh add john
+
+# View client config (for manual setup)
+sudo cat /etc/wireguard/clients/john.conf
 ```
 
 ## Current Status
@@ -104,11 +107,12 @@ sudo ./manage-clients.sh add client_name
 - **Nginx web dashboard with HTTPS**
 - **Automated server setup via UserData scripts**
 - **Server public key display via web interface**
-- **Basic client management script framework**
+- **Client management script with add functionality**
+- **Automatic IP assignment and configuration generation**
 
 🚧 **In Progress**
-- Client configuration generation and management
 - Web-based client management interface
+- Client removal functionality
 
 📋 **Next Steps**
 - Complete client add/remove functionality
