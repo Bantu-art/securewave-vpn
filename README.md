@@ -59,19 +59,42 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 
 ## Getting Started
 
-### Prerequisites
-- AWS Account with appropriate permissions
-- GitHub repository with secrets configured:
-  - `AWS_ACCESS_KEY_ID`
-  - `AWS_SECRET_ACCESS_KEY`
-  - `DEV_ADMIN_IP` / `PROD_ADMIN_IP`
-  - `DEV_KEY_PAIR` / `PROD_KEY_PAIR`
+### Quick Start
+For detailed step-by-step instructions, see [Setup Guide](docs/setup.md).
 
-### Deployment
-1. Create EC2 key pairs in AWS console
-2. Configure GitHub secrets
-3. Push to `dev/test` branch to deploy development environment
-4. Merge to `main` to deploy production environment
+### Prerequisites
+- AWS Account with administrative permissions
+- AWS CLI installed and configured
+- GitHub repository with secrets configured
+- Git for repository management
+
+### Deployment Overview
+1. **Setup AWS CLI** and configure credentials
+2. **Create EC2 key pairs** for dev and production
+3. **Configure GitHub secrets** with AWS credentials and parameters
+4. **Deploy to dev/test** branch for development environment
+5. **Deploy to main** branch for production environment
+
+### AWS CLI Deployment Commands
+```bash
+# Deploy network infrastructure
+aws cloudformation deploy \
+  --template-file infra/network-stack.yml \
+  --stack-name dev-network-stack
+
+# Deploy security groups
+aws cloudformation deploy \
+  --template-file infra/security-groups.yml \
+  --stack-name dev-security-groups \
+  --parameter-overrides AdminIP=YOUR_IP/32 EnvironmentName=dev
+
+# Deploy VPN server
+aws cloudformation deploy \
+  --template-file infra/vpn-stack.yml \
+  --stack-name dev-vpn-stack \
+  --parameter-overrides KeyPairName=dev-vpn-key EnvironmentName=dev \
+  --capabilities CAPABILITY_NAMED_IAM
+```
 
 ### Accessing the VPN Server
 - **Web Dashboard**: `https://INSTANCE_PUBLIC_IP` (ignore SSL warning)
@@ -142,6 +165,8 @@ Resources are automatically named with environment prefixes:
 - Self-signed SSL certificates for web dashboard
 - Secure key generation and management
 
-## Development
+## Documentation
 
-For detailed development information, architecture decisions, and troubleshooting, see [DEVELOPMENT.md](DEVELOPMENT.md).
+- **[Setup Guide](docs/setup.md)** - Complete deployment instructions from scratch
+- **[Development Guide](DEVELOPMENT.md)** - Technical details, architecture decisions, and troubleshooting
+- **[Client Management](#client-management)** - VPN client setup and management
