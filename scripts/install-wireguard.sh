@@ -107,7 +107,7 @@ systemctl start nginx
 # Fix Amazon Linux default page issue
 rm -f /usr/share/nginx/html/index.html
 cp /var/www/html/index.html /usr/share/nginx/html/index.html
-cp /var/www/html/server_public.key /usr/share/nginx/html/server_public.key
+cp /etc/wireguard/server_public.key /usr/share/nginx/html/server_public.key
 
 # Restart Nginx to ensure changes take effect
 systemctl restart nginx
