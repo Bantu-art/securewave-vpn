@@ -6,11 +6,33 @@
 </head>
 <body>
     <h1>SecureWave VPN Dashboard</h1>
+    
     <div class="status">
         <h2>Server Status</h2>
         <p id="status-text">Loading...</p>
         <button onclick="checkStatus()">Refresh Status</button>
     </div>
+    
+    <div class="client-management">
+        <h2>Client Management</h2>
+        
+        <div class="add-client">
+            <h3>Add New Client</h3>
+            <form id="add-client-form">
+                <input type="text" id="client-name" placeholder="Enter client name" required>
+                <button type="submit">Add Client</button>
+            </form>
+        </div>
+        
+        <div class="client-list">
+            <h3>Active Clients</h3>
+            <div id="clients-container">
+                <p>Loading clients...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message-container"></div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
