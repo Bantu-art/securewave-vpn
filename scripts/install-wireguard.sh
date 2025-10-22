@@ -119,6 +119,10 @@ mkdir -p /opt/vpn-dashboard
 useradd -r -s /bin/false vpn-dashboard 2>/dev/null || true
 chown vpn-dashboard:vpn-dashboard /opt/vpn-dashboard
 
+# Download and install manage-clients script
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/scripts/manage-clients.sh -o /usr/local/bin/manage-clients.sh
+chmod +x /usr/local/bin/manage-clients.sh
+
 # Configure sudo for dashboard user
 echo "vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh" > /etc/sudoers.d/vpn-dashboard
 

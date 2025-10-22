@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import subprocess
+import os
 
 app = Flask(__name__)
 
@@ -38,6 +39,62 @@ def get_status():
             'status': 'error',
             'message': f'Error getting status: {str(e)}'
         })
+
+@app.route('/api/clients', methods=['GET'])
+def get_clients():
+    try:
+        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'list'], 
+                              capture_output=True, text=True)
+        clients = []
+        for line in result.stdout.strip().split('\n'):
+            if line and ' - ' in line:
+                name, ip = line.split(' - ', 1)
+                clients.append({'name': name.strip(), 'ip': ip.strip()})
+        return jsonify({'clients': clients})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients', methods=['POST'])
+def add_client():
+    try:
+        data = request.get_json()
+        name = data.get('name', '').strip()
+        if not name:
+            return jsonify({'error': 'Client name required'}), 400
+            
+        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'add', name], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            return jsonify({'message': f'Client {name} added successfully'})
+        else:
+            return jsonify({'error': result.stderr.strip()}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<name>', methods=['DELETE'])
+def remove_client(name):
+    try:
+        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'remove', name], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            return jsonify({'message': f'Client {name} removed successfully'})
+        else:
+            return jsonify({'error': result.stderr.strip()}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<name>/config')
+def get_client_config(name):
+    try:
+        config_path = f'/etc/wireguard/clients/{name}.conf'
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                config = f.read()
+            return jsonify({'config': config})
+        else:
+            return jsonify({'error': 'Client configuration not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
