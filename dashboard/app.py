@@ -43,13 +43,21 @@ def get_status():
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
     try:
-        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'list'], 
-                              capture_output=True, text=True)
         clients = []
-        for line in result.stdout.strip().split('\n'):
-            if line and ' - ' in line:
-                name, ip = line.split(' - ', 1)
-                clients.append({'name': name.strip(), 'ip': ip.strip()})
+        client_dir = '/etc/wireguard/clients'
+        if os.path.exists(client_dir):
+            for filename in os.listdir(client_dir):
+                if filename.endswith('.conf'):
+                    client_name = filename[:-5]  # Remove .conf extension
+                    config_path = os.path.join(client_dir, filename)
+                    with open(config_path, 'r') as f:
+                        config_content = f.read()
+                        # Extract IP from Address line
+                        for line in config_content.split('\n'):
+                            if line.startswith('Address = '):
+                                ip = line.split('=')[1].strip().split('/')[0]
+                                clients.append({'name': client_name, 'ip': ip})
+                                break
         return jsonify({'clients': clients})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
