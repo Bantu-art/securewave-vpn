@@ -70,7 +70,7 @@ def add_client():
         if not name:
             return jsonify({'error': 'Client name required'}), 400
             
-        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'add', name], 
+        result = subprocess.run(['sudo', '/usr/local/bin/manage-clients.sh', 'add', name], 
                               capture_output=True, text=True)
         if result.returncode == 0:
             return jsonify({'message': f'Client {name} added successfully'})
@@ -82,7 +82,7 @@ def add_client():
 @app.route('/api/clients/<name>', methods=['DELETE'])
 def remove_client(name):
     try:
-        result = subprocess.run(['/usr/local/bin/manage-clients.sh', 'remove', name], 
+        result = subprocess.run(['sudo', '/usr/local/bin/manage-clients.sh', 'remove', name], 
                               capture_output=True, text=True)
         if result.returncode == 0:
             return jsonify({'message': f'Client {name} removed successfully'})
@@ -94,11 +94,10 @@ def remove_client(name):
 @app.route('/api/clients/<name>/config')
 def get_client_config(name):
     try:
-        config_path = f'/etc/wireguard/clients/{name}.conf'
-        if os.path.exists(config_path):
-            with open(config_path, 'r') as f:
-                config = f.read()
-            return jsonify({'config': config})
+        result = subprocess.run(['sudo', 'cat', f'/etc/wireguard/clients/{name}.conf'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            return jsonify({'config': result.stdout})
         else:
             return jsonify({'error': 'Client configuration not found'}), 404
     except Exception as e:
