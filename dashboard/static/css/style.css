@@ -3,10 +3,31 @@ body {
     margin: 40px;
 }
 
-.status {
+.status, .client-management {
     padding: 20px;
     background: #f0f0f0;
     border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.add-client {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#add-client-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#client-name {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 button {
@@ -20,4 +41,68 @@ button {
 
 button:hover {
     background: #0056b3;
+}
+
+.client-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.client-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-name {
+    font-weight: bold;
+}
+
+.client-ip {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.client-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+.btn-danger {
+    background: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+#message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.message.success {
+    background: #28a745;
+}
+
+.message.error {
+    background: #dc3545;
 }
