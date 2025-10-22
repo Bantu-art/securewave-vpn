@@ -63,6 +63,7 @@ Resources:
           if [ "${EnvironmentName}" = "dev" ]; then
             BRANCH="dev/test"
           fi
+          export BRANCH
           curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/scripts/install-wireguard.sh | bash
 
 Outputs:
