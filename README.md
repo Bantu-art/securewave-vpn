@@ -114,11 +114,13 @@ aws cloudformation deploy \
 
 ### Flask Dashboard Features
 - **Real-time Status**: WireGuard service status and system uptime
-- **API Endpoints**: RESTful API for status monitoring (`/api/status`)
+- **Client Management UI**: Web interface for adding/removing VPN clients
+- **Configuration Download**: One-click download of client .conf files
+- **API Endpoints**: RESTful API for status and client management
 - **Automated Deployment**: Complete Flask app deployment via CloudFormation
 - **External Access**: Accessible at `http://SERVER_IP:5000`
 - **Systemd Integration**: Runs as system service with auto-restart
-- **Template System**: Proper Flask templates with CSS and JavaScript
+- **Secure Permissions**: Automated sudo configuration for file access
 
 ### Client Management
 ```bash
@@ -158,15 +160,20 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Fully automated Flask deployment (templates, static files, systemd service)**
 - **Real-time WireGuard service status and system uptime**
 - **External access on port 5000 with proper security group rules**
+- **Complete web-based client management interface (add/remove clients via UI)**
+- **Client configuration download functionality with automatic file generation**
+- **Automated sudo permissions for Flask app to access client files**
+- **Full client management workflow: add clients via web UI, list all clients with IPs, download configs, remove clients**
+- **Resolved permission issues with comprehensive sudoers configuration for Flask app**
 
 🚧 **In Progress**
-- Web-based client management interface (add/remove clients via UI)
-- Client configuration download functionality
+- QR code generation for mobile clients
+- Enhanced web dashboard with client status
 
 📋 **Next Steps**
 - QR code generation for mobile clients
-- Enhanced web dashboard with client status
-- Web-based client management interface
+- Client connection status monitoring
+- Bandwidth usage tracking
 - Monitoring and logging setup
 - Backup and disaster recovery
 - Custom domain and proper SSL certificates
