@@ -122,9 +122,17 @@ chown vpn-dashboard:vpn-dashboard /opt/vpn-dashboard
 # Configure sudo for dashboard user
 echo "vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh" > /etc/sudoers.d/vpn-dashboard
 
+# Create Flask directory structure
+mkdir -p /opt/vpn-dashboard/templates
+mkdir -p /opt/vpn-dashboard/static/css
+mkdir -p /opt/vpn-dashboard/static/js
+
 # Download Flask application files
 curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/app.py -o /opt/vpn-dashboard/app.py
 curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/requirements.txt -o /opt/vpn-dashboard/requirements.txt
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/templates/index.html -o /opt/vpn-dashboard/templates/index.html
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/static/css/style.css -o /opt/vpn-dashboard/static/css/style.css
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/static/js/app.js -o /opt/vpn-dashboard/static/js/app.js
 
 # Install Python dependencies
 pip3 install -r /opt/vpn-dashboard/requirements.txt
