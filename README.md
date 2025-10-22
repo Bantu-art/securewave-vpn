@@ -41,6 +41,13 @@ SecureWave VPN provides a self-hosted VPN server running on AWS EC2 with WireGua
 - `scripts/manage-clients.sh` - Client management utilities
 - `dashboard/` - Flask web dashboard for client management
 
+### Flask Dashboard Architecture
+- `dashboard/app.py` - Main Flask application with API endpoints
+- `dashboard/templates/index.html` - Dashboard HTML template
+- `dashboard/static/css/style.css` - Dashboard styling
+- `dashboard/static/js/app.js` - Frontend JavaScript for API calls
+- `dashboard/requirements.txt` - Python dependencies
+
 ### Environment Management
 - **Development**: `dev/test` branch → dev environment
 - **Production**: `main` branch → production environment
@@ -100,9 +107,15 @@ aws cloudformation deploy \
 
 ### Accessing the VPN Server
 - **Web Dashboard**: `https://INSTANCE_PUBLIC_IP` (ignore SSL warning)
+- **Flask Dashboard**: `http://INSTANCE_PUBLIC_IP:5000` (development)
 - **SSH Access**: `ssh -i your-key.pem ec2-user@INSTANCE_PUBLIC_IP`
 - **Systems Manager**: Connect via AWS Console → EC2 → Session Manager
 - **WireGuard Port**: 51820/UDP for VPN connections
+
+### Flask Dashboard Features
+- **Real-time Status**: WireGuard service status and system uptime
+- **API Endpoints**: RESTful API for status monitoring
+- **Responsive Design**: Works on desktop and mobile devices
 
 ### Client Management
 ```bash
@@ -138,11 +151,13 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Complete client management script (add/remove/list)**
 - **Automatic IP assignment and configuration generation**
 - **Secure client removal with immediate disconnection**
-- **Flask dashboard integration setup**
+- **Flask dashboard foundation with real server status**
+- **Real-time WireGuard service monitoring**
+- **System uptime display**
 
 🚧 **In Progress**
-- Flask web dashboard implementation
-- Web-based client management interface
+- Web-based client management interface (add/remove clients via UI)
+- Client configuration download functionality
 
 📋 **Next Steps**
 - QR code generation for mobile clients
