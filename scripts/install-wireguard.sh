@@ -124,7 +124,7 @@ curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/sc
 chmod +x /usr/local/bin/manage-clients.sh
 
 # Configure sudo for dashboard user
-echo 'vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh, /bin/ls /etc/wireguard/clients/, /bin/cat /etc/wireguard/clients/*' > /etc/sudoers.d/vpn-dashboard
+echo 'vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh, /usr/local/bin/manage-clients.sh *, /bin/ls /etc/wireguard/clients/, /bin/cat /etc/wireguard/clients/*, /bin/touch /etc/wireguard/clients/*' > /etc/sudoers.d/vpn-dashboard
 
 # Create Flask directory structure
 mkdir -p /opt/vpn-dashboard/templates
