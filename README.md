@@ -114,8 +114,11 @@ aws cloudformation deploy \
 
 ### Flask Dashboard Features
 - **Real-time Status**: WireGuard service status and system uptime
-- **API Endpoints**: RESTful API for status monitoring
-- **Responsive Design**: Works on desktop and mobile devices
+- **API Endpoints**: RESTful API for status monitoring (`/api/status`)
+- **Automated Deployment**: Complete Flask app deployment via CloudFormation
+- **External Access**: Accessible at `http://SERVER_IP:5000`
+- **Systemd Integration**: Runs as system service with auto-restart
+- **Template System**: Proper Flask templates with CSS and JavaScript
 
 ### Client Management
 ```bash
@@ -151,9 +154,10 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Complete client management script (add/remove/list)**
 - **Automatic IP assignment and configuration generation**
 - **Secure client removal with immediate disconnection**
-- **Flask dashboard foundation with real server status**
-- **Real-time WireGuard service monitoring**
-- **System uptime display**
+- **Flask dashboard with real server status monitoring**
+- **Fully automated Flask deployment (templates, static files, systemd service)**
+- **Real-time WireGuard service status and system uptime**
+- **External access on port 5000 with proper security group rules**
 
 🚧 **In Progress**
 - Web-based client management interface (add/remove clients via UI)
