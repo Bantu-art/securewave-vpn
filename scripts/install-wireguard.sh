@@ -10,8 +10,11 @@ amazon-linux-extras install epel -y
 # Install WireGuard
 yum install wireguard-tools -y
 
-# Install Nginx
-yum install nginx -y
+# Install Nginx and Python
+yum install nginx python3 python3-pip -y
+
+# Install Flask
+pip3 install flask
 
 # Enable IP forwarding
 echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
@@ -109,5 +112,45 @@ cp /var/www/html/server_public.key /usr/share/nginx/html/server_public.key
 # Restart Nginx to ensure changes take effect
 systemctl restart nginx
 
+# Setup Flask Dashboard
+mkdir -p /opt/vpn-dashboard
+
+# Create dedicated user for Flask app
+useradd -r -s /bin/false vpn-dashboard 2>/dev/null || true
+chown vpn-dashboard:vpn-dashboard /opt/vpn-dashboard
+
+# Configure sudo for dashboard user
+echo "vpn-dashboard ALL=(ALL) NOPASSWD: /usr/local/bin/manage-clients.sh" > /etc/sudoers.d/vpn-dashboard
+
+# Download Flask application files
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/app.py -o /opt/vpn-dashboard/app.py
+curl -fsSL https://raw.githubusercontent.com/Bantu-art/securewave-vpn/$BRANCH/dashboard/requirements.txt -o /opt/vpn-dashboard/requirements.txt
+
+# Install Python dependencies
+pip3 install -r /opt/vpn-dashboard/requirements.txt
+
+# Create systemd service for Flask dashboard
+cat > /etc/systemd/system/vpn-dashboard.service << 'EOF'
+[Unit]
+Description=VPN Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=vpn-dashboard
+WorkingDirectory=/opt/vpn-dashboard
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start Flask dashboard
+systemctl daemon-reload
+systemctl enable vpn-dashboard
+systemctl start vpn-dashboard
+
 # Create log entry
-echo "WireGuard and Nginx installation completed at $(date)" >> /var/log/wireguard-install.log
+echo "WireGuard, Nginx, and Flask dashboard installation completed at $(date)" >> /var/log/wireguard-install.log
