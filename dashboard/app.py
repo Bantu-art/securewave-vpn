@@ -43,17 +43,17 @@ def get_status():
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
     try:
+        result = subprocess.run(['sudo', 'ls', '/etc/wireguard/clients/'], 
+                              capture_output=True, text=True)
         clients = []
-        client_dir = '/etc/wireguard/clients'
-        if os.path.exists(client_dir):
-            for filename in os.listdir(client_dir):
+        if result.returncode == 0:
+            for filename in result.stdout.strip().split('\n'):
                 if filename.endswith('.conf'):
-                    client_name = filename[:-5]  # Remove .conf extension
-                    config_path = os.path.join(client_dir, filename)
-                    with open(config_path, 'r') as f:
-                        config_content = f.read()
-                        # Extract IP from Address line
-                        for line in config_content.split('\n'):
+                    client_name = filename[:-5]
+                    config_result = subprocess.run(['sudo', 'cat', f'/etc/wireguard/clients/{filename}'], 
+                                                 capture_output=True, text=True)
+                    if config_result.returncode == 0:
+                        for line in config_result.stdout.split('\n'):
                             if line.startswith('Address = '):
                                 ip = line.split('=')[1].strip().split('/')[0]
                                 clients.append({'name': client_name, 'ip': ip})
