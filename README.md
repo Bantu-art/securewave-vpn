@@ -117,6 +117,8 @@ aws cloudformation deploy \
 - **Client Management UI**: Web interface for adding/removing VPN clients
 - **Configuration Download**: One-click download of client .conf files
 - **QR Code Generation**: Mobile-friendly QR codes for easy client setup
+- **Connection Status**: Real-time monitoring of client online/offline status
+- **Auto-refresh**: Automatic updates every 30 seconds
 - **API Endpoints**: RESTful API for status and client management
 - **Automated Deployment**: Complete Flask app deployment via CloudFormation
 - **External Access**: Accessible at `http://SERVER_IP:5000`
@@ -164,20 +166,21 @@ sudo cat /etc/wireguard/clients/john.conf
 - **Complete web-based client management interface (add/remove clients via UI)**
 - **Client configuration download functionality with automatic file generation**
 - **QR code generation for mobile client setup**
+- **Client connection status monitoring with real-time updates**
 - **Automated sudo permissions for Flask app to access client files**
 - **Full client management workflow: add clients via web UI, list all clients with IPs, download configs, remove clients**
 - **Resolved permission issues with comprehensive sudoers configuration for Flask app**
 
 🚧 **In Progress**
-- Client connection status monitoring
-- Enhanced web dashboard with client status
+- Bandwidth usage tracking
+- Enhanced monitoring and logging
 
 📋 **Next Steps**
-- Client connection status monitoring
 - Bandwidth usage tracking
-- Monitoring and logging setup
+- Enhanced monitoring and logging setup
 - Backup and disaster recovery
 - Custom domain and proper SSL certificates
+- Multi-user admin interface
 
 ## Resource Naming Convention
 
