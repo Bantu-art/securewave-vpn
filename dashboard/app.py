@@ -46,17 +46,33 @@ def get_status():
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
     try:
-        # Get connected clients with their IPs from WireGuard
+        # Get actively connected clients (with recent handshakes)
         wg_result = subprocess.run(['sudo', 'wg', 'show', 'wg0'], 
                                  capture_output=True, text=True)
-        connected_ips = set()
+        active_ips = set()
         if wg_result.returncode == 0:
             lines = wg_result.stdout.split('\n')
+            current_peer_ip = None
+            has_recent_handshake = False
+            
             for line in lines:
                 if 'allowed ips:' in line and '/32' in line:
                     # Extract IP from "allowed ips: 10.8.0.3/32"
-                    ip = line.split(':')[1].strip().split('/')[0]
-                    connected_ips.add(ip)
+                    current_peer_ip = line.split(':')[1].strip().split('/')[0]
+                elif 'latest handshake:' in line:
+                    # Check if handshake is recent (within last 5 minutes)
+                    if 'seconds ago' in line or 'minute ago' in line or ('minutes ago' in line and int(line.split()[2]) <= 5):
+                        has_recent_handshake = True
+                elif line.strip() == '' or line.startswith('peer:'):
+                    # End of peer block - check if this peer is active
+                    if current_peer_ip and has_recent_handshake:
+                        active_ips.add(current_peer_ip)
+                    current_peer_ip = None
+                    has_recent_handshake = False
+            
+            # Handle last peer
+            if current_peer_ip and has_recent_handshake:
+                active_ips.add(current_peer_ip)
         
         # Get all registered clients
         result = subprocess.run(['sudo', 'ls', '/etc/wireguard/clients/'], 
@@ -76,7 +92,7 @@ def get_clients():
                                 break
                         
                         if ip:
-                            is_connected = ip in connected_ips
+                            is_connected = ip in active_ips
                             clients.append({
                                 'name': client_name, 
                                 'ip': ip, 
