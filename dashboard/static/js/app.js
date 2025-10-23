@@ -40,6 +40,9 @@ function createClientHTML(client) {
                 <button class="btn-small" onclick="downloadConfig('${client.name}')">
                     Download Config
                 </button>
+                <button class="btn-small" onclick="showQRCode('${client.name}')">
+                    Show QR Code
+                </button>
                 <button class="btn-small btn-danger" onclick="removeClient('${client.name}')">
                     Remove
                 </button>
@@ -123,6 +126,40 @@ function downloadConfig(clientName) {
         .catch(error => {
             showMessage('Failed to download configuration', 'error');
         });
+}
+
+function showQRCode(clientName) {
+    fetch(`/api/clients/${clientName}/qr`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.qr_code) {
+                // Create modal for QR code display
+                const modal = document.createElement('div');
+                modal.className = 'qr-modal';
+                modal.innerHTML = `
+                    <div class="qr-modal-content">
+                        <span class="qr-close" onclick="closeQRModal()">&times;</span>
+                        <h3>QR Code for ${clientName}</h3>
+                        <img src="${data.qr_code}" alt="QR Code" class="qr-image">
+                        <p>Scan this QR code with your WireGuard mobile app</p>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            } else {
+                showMessage(data.error || 'Failed to generate QR code', 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('Failed to generate QR code', 'error');
+        });
+}
+
+function closeQRModal() {
+    const modal = document.querySelector('.qr-modal');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
 }
 
 function showMessage(message, type) {

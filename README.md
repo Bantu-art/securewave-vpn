@@ -116,6 +116,7 @@ aws cloudformation deploy \
 - **Real-time Status**: WireGuard service status and system uptime
 - **Client Management UI**: Web interface for adding/removing VPN clients
 - **Configuration Download**: One-click download of client .conf files
+- **QR Code Generation**: Mobile-friendly QR codes for easy client setup
 - **API Endpoints**: RESTful API for status and client management
 - **Automated Deployment**: Complete Flask app deployment via CloudFormation
 - **External Access**: Accessible at `http://SERVER_IP:5000`
@@ -162,16 +163,16 @@ sudo cat /etc/wireguard/clients/john.conf
 - **External access on port 5000 with proper security group rules**
 - **Complete web-based client management interface (add/remove clients via UI)**
 - **Client configuration download functionality with automatic file generation**
+- **QR code generation for mobile client setup**
 - **Automated sudo permissions for Flask app to access client files**
 - **Full client management workflow: add clients via web UI, list all clients with IPs, download configs, remove clients**
 - **Resolved permission issues with comprehensive sudoers configuration for Flask app**
 
 🚧 **In Progress**
-- QR code generation for mobile clients
+- Client connection status monitoring
 - Enhanced web dashboard with client status
 
 📋 **Next Steps**
-- QR code generation for mobile clients
 - Client connection status monitoring
 - Bandwidth usage tracking
 - Monitoring and logging setup

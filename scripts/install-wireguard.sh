@@ -13,8 +13,8 @@ yum install wireguard-tools -y
 # Install Nginx and Python
 yum install nginx python3 python3-pip -y
 
-# Install Flask
-pip3 install flask
+# Install Flask and QR code library
+pip3 install flask qrcode[pil]
 
 # Enable IP forwarding
 echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf

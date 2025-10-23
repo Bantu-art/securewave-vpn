@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 import subprocess
 import os
+import qrcode
+import io
+import base64
 
 app = Flask(__name__)
 
@@ -98,6 +101,32 @@ def get_client_config(name):
                               capture_output=True, text=True)
         if result.returncode == 0:
             return jsonify({'config': result.stdout})
+        else:
+            return jsonify({'error': 'Client configuration not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<name>/qr')
+def get_client_qr(name):
+    try:
+        result = subprocess.run(['sudo', 'cat', f'/etc/wireguard/clients/{name}.conf'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            # Generate QR code
+            qr = qrcode.QRCode(version=1, box_size=10, border=5)
+            qr.add_data(result.stdout)
+            qr.make(fit=True)
+            
+            # Create QR code image
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Convert to base64 for JSON response
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+            
+            return jsonify({'qr_code': f'data:image/png;base64,{img_base64}'})
         else:
             return jsonify({'error': 'Client configuration not found'}), 404
     except Exception as e:
