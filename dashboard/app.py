@@ -46,6 +46,14 @@ def get_status():
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
     try:
+        # Get connected clients from WireGuard
+        wg_result = subprocess.run(['sudo', 'wg', 'show', 'wg0', 'peers'], 
+                                 capture_output=True, text=True)
+        connected_peers = set()
+        if wg_result.returncode == 0:
+            connected_peers = set(wg_result.stdout.strip().split('\n')) if wg_result.stdout.strip() else set()
+        
+        # Get all registered clients
         result = subprocess.run(['sudo', 'ls', '/etc/wireguard/clients/'], 
                               capture_output=True, text=True)
         clients = []
@@ -56,11 +64,21 @@ def get_clients():
                     config_result = subprocess.run(['sudo', 'cat', f'/etc/wireguard/clients/{filename}'], 
                                                  capture_output=True, text=True)
                     if config_result.returncode == 0:
+                        ip = None
+                        public_key = None
                         for line in config_result.stdout.split('\n'):
                             if line.startswith('Address = '):
                                 ip = line.split('=')[1].strip().split('/')[0]
-                                clients.append({'name': client_name, 'ip': ip})
-                                break
+                            elif line.startswith('PublicKey = '):
+                                public_key = line.split('=')[1].strip()
+                        
+                        if ip and public_key:
+                            is_connected = public_key in connected_peers
+                            clients.append({
+                                'name': client_name, 
+                                'ip': ip, 
+                                'connected': is_connected
+                            })
         return jsonify({'clients': clients})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
