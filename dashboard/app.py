@@ -46,12 +46,17 @@ def get_status():
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
     try:
-        # Get connected clients from WireGuard
-        wg_result = subprocess.run(['sudo', 'wg', 'show', 'wg0', 'peers'], 
+        # Get connected clients with their IPs from WireGuard
+        wg_result = subprocess.run(['sudo', 'wg', 'show', 'wg0'], 
                                  capture_output=True, text=True)
-        connected_peers = set()
+        connected_ips = set()
         if wg_result.returncode == 0:
-            connected_peers = set(wg_result.stdout.strip().split('\n')) if wg_result.stdout.strip() else set()
+            lines = wg_result.stdout.split('\n')
+            for line in lines:
+                if 'allowed ips:' in line and '/32' in line:
+                    # Extract IP from "allowed ips: 10.8.0.3/32"
+                    ip = line.split(':')[1].strip().split('/')[0]
+                    connected_ips.add(ip)
         
         # Get all registered clients
         result = subprocess.run(['sudo', 'ls', '/etc/wireguard/clients/'], 
@@ -65,15 +70,13 @@ def get_clients():
                                                  capture_output=True, text=True)
                     if config_result.returncode == 0:
                         ip = None
-                        public_key = None
                         for line in config_result.stdout.split('\n'):
                             if line.startswith('Address = '):
                                 ip = line.split('=')[1].strip().split('/')[0]
-                            elif line.startswith('PublicKey = '):
-                                public_key = line.split('=')[1].strip()
+                                break
                         
-                        if ip and public_key:
-                            is_connected = public_key in connected_peers
+                        if ip:
+                            is_connected = ip in connected_ips
                             clients.append({
                                 'name': client_name, 
                                 'ip': ip, 
