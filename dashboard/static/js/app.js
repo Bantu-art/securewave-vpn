@@ -30,11 +30,15 @@ function loadClients() {
 }
 
 function createClientHTML(client) {
+    const statusClass = client.connected ? 'status-online' : 'status-offline';
+    const statusText = client.connected ? 'Online' : 'Offline';
+    
     return `
         <div class="client-item">
             <div class="client-info">
                 <div class="client-name">${client.name}</div>
                 <div class="client-ip">${client.ip}</div>
+                <div class="client-status ${statusClass}">${statusText}</div>
             </div>
             <div class="client-actions">
                 <button class="btn-small" onclick="downloadConfig('${client.name}')">
@@ -187,4 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         addClient();
     });
+    
+    // Auto-refresh status and clients every 30 seconds
+    setInterval(() => {
+        checkStatus();
+        loadClients();
+    }, 30000);
 });
