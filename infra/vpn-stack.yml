@@ -7,7 +7,7 @@ Parameters:
   
   EnvironmentName:
     Type: String
-    Description: Environment name (dev or prod)
+    Description: Environment name (dev)
 
 Resources:
   VPNInstanceRole:
