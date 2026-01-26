@@ -1,4 +1,4 @@
-# SecureWave VPN
+# SecureWave VPN1
 
 A secure, cloud-based VPN solution built on AWS infrastructure using Infrastructure as Code (IaC) principles.
 
